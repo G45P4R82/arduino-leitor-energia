@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+*.pyc
+build/
+dados_sct013.csv
+.env
+secrets.h
+.kivy/
