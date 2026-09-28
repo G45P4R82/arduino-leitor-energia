@@ -1,0 +1,73 @@
+FIELDS USADOS - PROJETO LEITOR DE ENERGIA
+=========================================
+
+Todos os IoTs enviam os mesmos parametros do codigo:
+
+field1 = currentRms
+         Corrente RMS calculada pelo EmonLib, em amperes.
+
+field2 = millis() / 1000UL
+         Tempo de funcionamento desde o ultimo reset, em segundos.
+
+field3 = lastLatency
+         Tempo da ultima requisicao ao ThingSpeak, em milissegundos.
+
+field4 = totalBytesSent
+         Total acumulado de bytes enviados nas requisicoes.
+
+field5 = lastRate
+         Taxa estimada da ultima requisicao, em bytes por segundo.
+
+field6 = successCount
+         Quantidade acumulada de envios aceitos com sucesso.
+
+field7 = failureCount
+         Quantidade acumulada de falhas de rede ou timeout.
+
+field8 = linkUp (Ethernet) ou 1 (Wi-Fi)
+         0 = link desconectado
+         1 = link conectado
+
+Informacao adicional:
+
+O endereco IP e enviado no campo textual "status" do ThingSpeak.
+
+
+IOT001
+======
+
+Canal: 1377479
+Nome: iot - telemetria - atp
+Transporte: Arduino Uno + Ethernet Shield
+Sensor: SCT-013 no A0
+Intervalo de envio: 30 segundos
+
+
+IOT002
+======
+
+Canal: 3510600
+Nome: iot-2-amperes
+Transporte: Arduino Uno + Ethernet Shield
+Sensor: SCT-013 no A0
+Intervalo de envio: 30 segundos
+
+
+IOT003
+======
+
+Canal: 3511204
+Nome: iot-3-amperes
+Transporte: Wemos/ESP32 via Wi-Fi
+Rede: IoT
+Sensor: SCT-013 no GPIO36 / IO36 / ADC0
+Intervalo de envio: 30 segundos
+
+
+OBSERVACOES
+===========
+
+- Os Fields 2 a 8 sao telemetria de comunicacao e funcionamento.
+- A potencia aparente e exibida na serial, mas nao e publicada atualmente.
+- O monitor_serial.py consulta e mostra os oito Fields.
+- Write API Keys e Read API Keys nao devem ser armazenadas neste arquivo.

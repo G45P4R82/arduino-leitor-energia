@@ -52,6 +52,10 @@ CANAIS = {
         "id": 3510600,
         "read_key": os.getenv("THINGSPEAK_IOT002_READ_KEY", ""),
     },
+    "iot003 - canal 3511204": {
+        "id": 3511204,
+        "read_key": os.getenv("THINGSPEAK_IOT003_READ_KEY", ""),
+    },
 }
 
 
