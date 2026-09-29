@@ -5,5 +5,7 @@ build/
 dados_sct013.csv
 .env
 secrets.h
+ota-signing-private.pem
+ota-signing-public.pem
 .kivy/
 logs/
