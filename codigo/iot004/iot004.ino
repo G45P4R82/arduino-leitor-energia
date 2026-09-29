@@ -1,7 +1,9 @@
 #include <SPI.h>
 #include <Ethernet.h>
+#include <SSLClient.h>
 #include "EmonLib.h"
 #include "ota_public_key.h"
+#include "github_trust_anchors.h"
 
 // iot004: ESP32 + W5100, Ethernet only.
 const char FIRMWARE_VERSION[] = "0.1.0";
@@ -11,6 +13,7 @@ byte macAddress[] = {0x02, 0x00, 0x00, 0x00, 0x04, 0x01};
 
 EnergyMonitor sensor;
 EthernetClient client;
+SSLClient secureClient(client, TAs, (size_t)TAs_NUM, SENSOR_PIN, 1, SSLClient::SSL_ERROR);
 bool ethernetReady = false;
 
 // OTA transport is intentionally not enabled until W5100 TLS is validated.
@@ -39,10 +42,39 @@ void connectEthernet() {
   ethernetReady = Ethernet.begin(macAddress, 5000, 1000) != 0;
   if (!ethernetReady) {
     Serial.println("Falha no DHCP.");
+    Serial.print("Hardware Ethernet: ");
+    Serial.println(Ethernet.hardwareStatus() == EthernetNoHardware ? "nao detectado" : "detectado");
+    Serial.print("Link Ethernet: ");
+    Serial.println(Ethernet.linkStatus() == LinkON ? "up" : "down");
     return;
   }
   delay(500);
   printNetworkInfo();
+}
+
+void testGithubHttps() {
+  Serial.println("Testando HTTPS no GitHub via W5100...");
+  if (!secureClient.connect("github.com", 443)) {
+    Serial.println("Falha TLS/HTTPS no W5100.");
+    return;
+  }
+
+  secureClient.println("HEAD /G45P4R82/arduino-leitor-energia/releases/latest HTTP/1.1");
+  secureClient.println("Host: github.com");
+  secureClient.println("Connection: close");
+  secureClient.println();
+
+  unsigned long started = millis();
+  while (!secureClient.available() && secureClient.connected() && millis() - started < 15000) {
+    delay(10);
+  }
+  if (secureClient.available()) {
+    Serial.print("GitHub HTTPS: ");
+    Serial.println(secureClient.readStringUntil('\n'));
+  } else {
+    Serial.println("GitHub HTTPS sem resposta.");
+  }
+  secureClient.stop();
 }
 
 void setup() {
@@ -53,6 +85,9 @@ void setup() {
   SPI.begin(18, 19, 23, ETHERNET_CS);
   Ethernet.init(ETHERNET_CS);
   connectEthernet();
+  if (ethernetReady) {
+    testGithubHttps();
+  }
 }
 
 void loop() {

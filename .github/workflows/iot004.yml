@@ -26,7 +26,7 @@ jobs:
         run: |
           arduino-cli core update-index
           arduino-cli core install esp32:esp32@3.3.11
-          arduino-cli lib install EmonLib Ethernet
+          arduino-cli lib install EmonLib Ethernet SSLClient
 
       - name: Compile iot004
         run: |
@@ -65,7 +65,7 @@ jobs:
         run: |
           arduino-cli core update-index
           arduino-cli core install esp32:esp32@3.3.11
-          arduino-cli lib install EmonLib Ethernet
+          arduino-cli lib install EmonLib Ethernet SSLClient
 
       - name: Compile release firmware
         run: |
