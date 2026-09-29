@@ -1,6 +1,7 @@
 #include <SPI.h>
 #include <Ethernet.h>
 #include "EmonLib.h"
+#include "ota_public_key.h"
 
 // iot004: ESP32 + W5100, Ethernet only.
 const char FIRMWARE_VERSION[] = "0.1.0";
@@ -11,6 +12,9 @@ byte macAddress[] = {0x02, 0x00, 0x00, 0x00, 0x04, 0x01};
 EnergyMonitor sensor;
 EthernetClient client;
 bool ethernetReady = false;
+
+// OTA transport is intentionally not enabled until W5100 TLS is validated.
+const char* OTA_SIGNING_KEY = OTA_PUBLIC_KEY_PEM;
 
 void printNetworkInfo() {
   byte actualMac[6];

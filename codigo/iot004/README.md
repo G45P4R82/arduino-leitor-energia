@@ -22,3 +22,5 @@ arduino-cli compile --fqbn esp32:esp32:esp32:PartitionScheme=default codigo/iot0
 Tags no formato `iot004-vX.Y.Z` acionam o workflow de release. O pacote publicado contem o binario, manifesto, SHA-256 e assinatura.
 
 O cliente OTA seguro sera habilitado depois da validacao eletrica e do teste DHCP do W5100.
+
+A chave publica de assinatura esta em `ota_public_key.h`. A chave privada nunca deve ser adicionada ao repositorio; ela fica somente no secret `IOT004_OTA_SIGNING_KEY` do GitHub Actions.
