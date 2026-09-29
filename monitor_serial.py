@@ -56,6 +56,18 @@ CANAIS = {
         "id": 3511204,
         "read_key": os.getenv("THINGSPEAK_IOT003_READ_KEY", ""),
     },
+    "iot003-IC - canal 3513189": {
+        "id": 3513189,
+        "read_key": os.getenv("THINGSPEAK_IOT003_IC_READ_KEY", ""),
+    },
+    "iot001-IC - canal 3513186": {
+        "id": 3513186,
+        "read_key": os.getenv("THINGSPEAK_IOT001_IC_READ_KEY", ""),
+    },
+    "iot002-IC - canal 3513187": {
+        "id": 3513187,
+        "read_key": os.getenv("THINGSPEAK_IOT002_IC_READ_KEY", ""),
+    },
 }
 
 

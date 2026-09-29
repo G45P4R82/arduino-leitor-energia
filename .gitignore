@@ -6,3 +6,4 @@ dados_sct013.csv
 .env
 secrets.h
 .kivy/
+logs/

@@ -8,15 +8,36 @@ EnergyMonitor sensor;
 const int SENSOR_PIN = 36; // GPIO36, ADC1/ADC0
 const float MAINS_VOLTAGE = 127.0;
 const char THINGSPEAK_HOST[] = "api.thingspeak.com";
-const char THINGSPEAK_WRITE_KEY[] = IOT003_WRITE_KEY;
 const unsigned long SEND_INTERVAL = 30000;
 
+struct Destination {
+  const char* writeKey;
+  const char* name;
+};
+
+struct DestinationStats {
+  unsigned long successCount;
+  unsigned long failureCount;
+  unsigned long totalBytesSent;
+  unsigned long lastLatency;
+  float lastRate;
+};
+
+Destination destinations[] = {
+  {IOT003_WRITE_KEY, "iot003-pessoal"},
+  {IOT003_IC_WRITE_KEY, "iot003-IC"}
+};
+DestinationStats stats[2] = {};
+const byte DESTINATION_COUNT = sizeof(destinations) / sizeof(destinations[0]);
+
 unsigned long lastSend = 0;
-unsigned long successCount = 0;
-unsigned long failureCount = 0;
-unsigned long totalBytesSent = 0;
-unsigned long lastLatency = 0;
-float lastRate = 0;
+
+void printNetworkInfo() {
+  Serial.print("IP = ");
+  Serial.println(WiFi.localIP());
+  Serial.print("MAC = ");
+  Serial.println(WiFi.macAddress());
+}
 
 void connectWiFi() {
   if (WiFi.status() == WL_CONNECTED) {
@@ -35,15 +56,21 @@ void connectWiFi() {
   if (WiFi.status() == WL_CONNECTED) {
     Serial.print(" conectado. IP: ");
     Serial.println(WiFi.localIP());
+    Serial.print("MAC: ");
+    Serial.println(WiFi.macAddress());
   } else {
     Serial.println(" falhou");
   }
 }
 
-void sendToThingSpeak(double currentRms) {
+void sendToThingSpeak(byte index, double currentRms) {
+  Destination destination = destinations[index];
+  DestinationStats& destinationStats = stats[index];
+
   if (WiFi.status() != WL_CONNECTED) {
-    failureCount++;
-    Serial.println("Sem Wi-Fi; dados nao enviados.");
+    destinationStats.failureCount++;
+    Serial.print(destination.name);
+    Serial.println(": sem Wi-Fi; dados nao enviados.");
     return;
   }
 
@@ -51,22 +78,22 @@ void sendToThingSpeak(double currentRms) {
   String url = "http://";
   url += THINGSPEAK_HOST;
   url += "/update?api_key=";
-  url += THINGSPEAK_WRITE_KEY;
+  url += destination.writeKey;
   url += "&field1=";
   url += String(currentRms, 3);
   url += "&field2=";
   url += String(millis() / 1000UL);
   url += "&field3=";
-  url += String(lastLatency);
+  url += String(destinationStats.lastLatency);
   url += "&field4=";
-  url += String(totalBytesSent);
+  url += String(destinationStats.totalBytesSent);
   url += "&field5=";
-  url += String(lastRate, 1);
+  url += String(destinationStats.lastRate, 1);
   url += "&field6=";
-  url += String(successCount);
+  url += String(destinationStats.successCount);
   url += "&field7=";
-  url += String(failureCount);
-  url += "&field8=1&status=IP%3A";
+  url += String(destinationStats.failureCount);
+  url += "&field8=1&status=iot003%20IP%3A";
   url += WiFi.localIP().toString();
 
   unsigned long started = millis();
@@ -75,20 +102,20 @@ void sendToThingSpeak(double currentRms) {
   String response = http.getString();
   http.end();
 
-  lastLatency = millis() - started;
-  totalBytesSent += url.length();
-  lastRate = url.length() * 1000.0 / max(1UL, lastLatency);
+  destinationStats.lastLatency = millis() - started;
+  destinationStats.totalBytesSent += url.length();
+  destinationStats.lastRate = url.length() * 1000.0 / max(1UL, destinationStats.lastLatency);
 
   if (responseCode == HTTP_CODE_OK && response.toInt() > 0) {
-    successCount++;
-    Serial.print("Dados enviados. Entry: ");
+    destinationStats.successCount++;
+    Serial.print(destination.name);
+    Serial.print(": dados enviados. Entry: ");
     Serial.println(response);
   } else {
-    failureCount++;
-    Serial.print("Falha ThingSpeak HTTP ");
-    Serial.print(responseCode);
-    Serial.print(" resposta: ");
-    Serial.println(response);
+    destinationStats.failureCount++;
+    Serial.print(destination.name);
+    Serial.print(": falha HTTP ");
+    Serial.println(responseCode);
   }
 }
 
@@ -104,6 +131,7 @@ void loop() {
   double currentRms = sensor.calcIrms(1480);
   double apparentPower = currentRms * MAINS_VOLTAGE;
 
+  printNetworkInfo();
   Serial.print("Corrente = ");
   Serial.print(currentRms, 3);
   Serial.println(" A");
@@ -115,7 +143,9 @@ void loop() {
     connectWiFi();
   }
   if (millis() - lastSend >= SEND_INTERVAL) {
-    sendToThingSpeak(currentRms);
+    for (byte index = 0; index < DESTINATION_COUNT; index++) {
+      sendToThingSpeak(index, currentRms);
+    }
     lastSend = millis();
   }
 

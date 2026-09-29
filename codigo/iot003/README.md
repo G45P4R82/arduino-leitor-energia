@@ -1,6 +1,6 @@
 # iot003 - ESP32 Wi-Fi
 
-Firmware da Wemos/ESP32 para medir o SCT-013 e publicar no canal ThingSpeak `3511204`.
+Firmware da Wemos/ESP32 para medir o SCT-013 e publicar nos canais ThingSpeak `3511204` e `3513189`.
 
 ## Hardware
 
@@ -14,7 +14,8 @@ O `GPIO2` nao deve ser usado para esta leitura quando o Wi-Fi estiver ativo, poi
 ## ThingSpeak
 
 - Canal: `3511204`
-- Nome: `iot-3-amperes`
+- Canal pessoal: `3511204` (`iot-3-amperes`)
+- Canal IC: `3513189` (`projeto-26-2s-C`)
 - Field 1: corrente
 - Field 2: uptime
 - Field 3: latencia
@@ -24,14 +25,14 @@ O `GPIO2` nao deve ser usado para esta leitura quando o Wi-Fi estiver ativo, poi
 - Field 7: falhas/timeouts
 - Field 8: link Wi-Fi
 
-O IP e enviado no campo `status`. O envio ocorre a cada 30 segundos.
+O mesmo pacote de oito Fields e enviado aos dois canais. O IP e enviado no campo `status`. O envio ocorre a cada 30 segundos.
 
 ## Rede
 
 As credenciais ficam em `secrets.h`, que nao e versionado:
 
 ```cpp
-#define WIFI_SSID "iot"
+#define WIFI_SSID "IoT-local"
 #define WIFI_PASSWORD "..."
 ```
 
