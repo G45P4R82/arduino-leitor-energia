@@ -9,3 +9,4 @@ ota-signing-private.pem
 ota-signing-public.pem
 .kivy/
 logs/
+docs/consulta_thingspeak_colab.ipynb

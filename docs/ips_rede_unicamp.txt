@@ -1,0 +1,16 @@
+IPS ENCONTRADOS - REDE UNICAMP
+==============================
+
+IPs observados durante os testes via DHCP:
+
+iot001: 172.16.200.53
+iot002: 172.16.200.52
+
+Observacao:
+
+Esses enderecos foram fornecidos pelo DHCP e podem mudar quando as placas
+forem reiniciadas ou reconectadas. Para manter IPs permanentes, sera
+necessario configurar reservas DHCP pelo MAC ou usar IPs estaticos.
+
+O iot003 recebeu o IP 172.16.201.63 em um teste de Wi-Fi, pertencente a
+outra faixa de rede.

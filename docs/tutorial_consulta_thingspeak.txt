@@ -1,0 +1,50 @@
+TUTORIAL - CONSULTA DE DADOS THINGSPEAK COM PYTHON
+==================================================
+
+Este tutorial consulta os seis canais privados do projeto usando somente
+Read API Keys. As Write API Keys nao sao necessarias para consultar dados.
+
+O notebook consulta:
+
+- iot001 pessoal: canal 1377479
+- iot001 IC: canal 3513186
+- iot002 pessoal: canal 3510600
+- iot002 IC: canal 3513187
+- iot003 pessoal: canal 3511204
+- iot003 IC: canal 3513189
+
+## Uso no Google Colab
+
+1. Abra o arquivo `consulta_thingspeak_colab.ipynb` no Google Colab.
+2. Execute as celulas na ordem.
+3. Na celula de parametros, informe a data inicial e final ou deixe como
+   `None` para consultar o historico disponivel.
+4. A tabela consolidada sera criada em um DataFrame pandas.
+5. Os graficos mostram a corrente RMS por sensor e conta.
+6. O CSV sera exportado para download.
+
+## Campos retornados
+
+Field 1: corrente
+Field 2: uptime
+Field 3: latencia
+Field 4: bytes enviados
+Field 5: taxa de saida
+Field 6: envios OK
+Field 7: falhas/timeouts
+Field 8: link de rede
+
+## Horarios
+
+O ThingSpeak retorna `created_at` em UTC. O notebook cria tambem:
+
+- `created_at_utc`
+- `created_at_brasilia`
+- `collected_at_utc`, horario em que a API foi consultada
+
+## Seguranca
+
+O notebook contem Read API Keys para facilitar o compartilhamento interno.
+Ele nao contem Write API Keys. Nao publique o notebook em repositorio publico,
+site ou forum. Se ele for compartilhado fora do grupo autorizado, gere novas
+Read API Keys no ThingSpeak.
